@@ -7,4 +7,4 @@ To use, select one of the options in at the bottom of `main.py`, and then simply
 
 The stochastic activation function will be featured, and explained, in a forthcoming publication.  If you make use of the activation function, please cite the paper.
 
-Requires at least TensorFlow (including numpy and pandas) and scikit-learn to be installed,
+Requires at least TensorFlow, numpy, pandas, and scikit-learn to be installed.
