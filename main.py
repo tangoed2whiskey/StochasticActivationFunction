@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import shutil
 
 def main(dataset=None,method=None,**kwargs):
     if dataset=='mnist' or dataset=='MNIST':
@@ -28,7 +29,7 @@ def main(dataset=None,method=None,**kwargs):
 
     if method=='dense':
         from dense_net import dense_net
-        these_kwargs = {key:kwargs[key] for key in ['stochastic','dropout','epochs'] if key in kwargs}
+        these_kwargs = {key:kwargs[key] for key in ['stochastic','dropout','epochs','input_dropout','hidden_dropout'] if key in kwargs}
         dense_net(x_train=x_train,x_test=x_test,y_train=y_train,y_test=y_test,num_classes=num_classes,**these_kwargs)
     elif method=='resnetv2':
         from vgg import vgg
@@ -53,7 +54,7 @@ if __name__=='__main__':
     '''
     Pick one of the below operations
     '''
-    # main(dataset='mnist',method='dense',stochastic=True,dropout=False,epochs=2000)
-    # main(dataset='cifar',method='vgg',stochastic=False,dropout=False,epochs=250)
+    # main(dataset='mnist',method='dense',stochastic=True,dropout=False,epochs=250)
+    main(dataset='cifar',method='resnetv2',stochastic=False,dropout=False,epochs=20)
     # main(dataset='boston',method='dense_boston',stochastic=True,dropout=False,epochs=100)
     # main(dataset='boston',method='RF',number_trees=100)

@@ -8,6 +8,8 @@ from scaler import train_scaler,scale_data,inverse_scale_data,inverse_scale_unce
 from sklearn.externals import joblib
 from sklearn.metrics import r2_score,mean_squared_error
 
+tf.compat.v1.disable_eager_execution()
+
 
 def predict_with_uncertainty(f, x, output_length, n_iter=100):
     result = np.zeros((n_iter,) + (x.shape[0],output_length))
@@ -31,6 +33,8 @@ def boston_net(x_train=None,x_test=None,y_train=None,y_test=None,dropout=False,s
 
     x_scalers,x_train = train_scaler(x_train)
     x_test = scale_data(x_test,x_scalers)
+    if not os.path.isdir('saved_models'):
+        os.mkdir('saved_models')
     joblib.dump(x_scalers,'saved_models/x_scalers.pkl')
 
     y_scalers,y_train = train_scaler(y_train_trans)
@@ -70,7 +74,9 @@ def boston_net(x_train=None,x_test=None,y_train=None,y_test=None,dropout=False,s
 
     predictions_all = model.predict(x_test)
 
+    # func = tf.keras.backend.function([model.layers[0].input, tf.keras.backend.set_learning_phase(0)],[model.layers[-1].output])
     func = tf.keras.backend.function([model.layers[0].input, tf.keras.backend.learning_phase()],[model.layers[-1].output])
+    # func = tf.keras.backend.function([model.layers[0].input, 1],[model.layers[-1].output])
 
     predictions_100, uncertainties_100 = predict_with_uncertainty(func,x_test,1,n_iter=100)
     _, uncertainties_99 = predict_with_uncertainty(func,x_test,1,n_iter=99)
@@ -93,5 +99,7 @@ def boston_net(x_train=None,x_test=None,y_train=None,y_test=None,dropout=False,s
     predictions_all = np.concatenate([y_test_trans,predictions_all,uncertainties_99],axis=-1)
     predictions_100 = np.concatenate([y_test_trans,predictions_100,uncertainties_100],axis=-1)
 
+    if not os.path.isdir('boston_housing'):
+        os.mkdir('boston_housing')
     pd.DataFrame(predictions_all).to_csv('boston_housing/data/boston_predictions_all.csv',header=None,index=None)
     pd.DataFrame(predictions_100).to_csv('boston_housing/data/boston_predictions_100.csv',header=None,index=None)

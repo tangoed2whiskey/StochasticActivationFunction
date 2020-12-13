@@ -3,6 +3,7 @@ from scaler import train_scaler,scale_data,inverse_scale_data,inverse_scale_unce
 from sklearn.externals import joblib
 import numpy as np
 import pandas as pd
+import os
 from sklearn.metrics import r2_score,mean_squared_error
 
 def random_forest(x_train=None,x_test=None,y_train=None,y_test=None,number_trees=100):
@@ -17,6 +18,8 @@ def random_forest(x_train=None,x_test=None,y_train=None,y_test=None,number_trees
 
     x_scalers,x_train = train_scaler(x_train)
     x_test = scale_data(x_test,x_scalers)
+    if not os.path.isdir('saved_models'):
+        os.mkdir('saved_models')
     joblib.dump(x_scalers,'saved_models/x_scalers.pkl')
 
     y_scalers,y_train = train_scaler(y_train_trans)
@@ -45,6 +48,8 @@ def random_forest(x_train=None,x_test=None,y_train=None,y_test=None,number_trees
 
     predictions_all = np.concatenate([y_test_trans,predictions_all,uncertainties_all],axis=-1)
 
+    if not os.path.isdir('boston_housing/data'):
+        os.makedirs('boston_housing/data')
     pd.DataFrame(predictions_all).to_csv('boston_housing/data/boston_RF_predictions.csv',header=None,index=None)
 
 

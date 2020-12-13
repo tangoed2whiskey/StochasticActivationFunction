@@ -71,7 +71,7 @@ class IncorrectHistory(tf.keras.callbacks.Callback):
     def on_train_begin(self,logs={}):
         self.incorrect=[]
     def on_epoch_end(self,batch,logs={}):
-        self.incorrect.append(1.0 - logs.get('val_acc'))
+        self.incorrect.append(1.0 - logs.get('val_accuracy'))
 
 class TestAccuracy(tf.keras.callbacks.Callback):
     def on_train_begin(self,logs={}):
